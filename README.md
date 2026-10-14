@@ -11,31 +11,39 @@ overlaid on it, adjust the position and zoom, and download the framed photo.
 ## Use your own frame
 
 1. Design your frame as a **PNG with a transparent area** where the photo
-   should show through (e.g. in Canva, Figma, or Photoshop). 1080×1080 works
-   well for Instagram; any size or aspect ratio is fine.
-2. Replace `assets/frame.png` with it (keep the same file name, or change
-   `FRAME_SRC` at the top of `app.js`).
+   should show through (e.g. in Canva, Figma, or Photoshop). Any size or
+   aspect ratio is fine.
+2. Replace `public/assets/frame.png` with it (keep the same file name, or
+   change `FRAME_SRC` at the top of `public/app.js`).
 
 The downloaded image will be the same size as your frame PNG. You can also
-change the page title and text in `index.html`, and the button color via
-`--accent` in `style.css`.
+change the page title and text in `public/index.html`, and the button color
+via `--accent` in `public/style.css`.
 
-## Host it for free with GitHub Pages
+## Host it on Cloudflare Workers (free, `*.workers.dev` link)
 
-1. Push this repo to GitHub.
-2. Open the repo's **Settings → Pages**.
-3. Under **Build and deployment**, choose **Deploy from a branch**, select
-   `main` and `/ (root)`, then **Save**.
-4. After a minute your link appears at the top of that page, e.g.
-   `https://<your-username>.github.io/photoframe/`. Share it with anyone.
+The repo includes `wrangler.jsonc`, which serves the `public/` folder.
 
-Any static host also works (Netlify, Vercel, Cloudflare Pages) — just upload
-the folder. No build step needed.
+1. In the Cloudflare dashboard, open **Workers & Pages → Create → Import a
+   repository**, connect GitHub, and pick this repo.
+2. Keep the defaults (deploy command `npx wrangler deploy`) and click
+   **Deploy**.
+3. Your link appears when it finishes, e.g.
+   `https://photoframe.<your-subdomain>.workers.dev`. Every push to `main`
+   redeploys automatically.
+
+Or deploy from your own computer: `npx wrangler login`, then
+`npx wrangler deploy`.
+
+## Other hosts
+
+GitHub Pages, Netlify, or Vercel also work: publish the `public/` folder.
+No build step needed.
 
 ## Run locally
 
 ```sh
-python3 -m http.server 8000
+python3 -m http.server 8000 --directory public
 ```
 
 Then open <http://localhost:8000>. (Opening `index.html` directly from disk
