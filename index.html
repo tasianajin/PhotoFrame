@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Photo Frame</title>
+  <meta name="description" content="Add our frame to your photo and download it.">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="app">
+    <header>
+      <h1>Photo Frame</h1>
+      <p class="subtitle">Upload a photo, adjust it, and download it with the frame.</p>
+    </header>
+
+    <div class="stage" id="stage">
+      <canvas id="canvas" aria-label="Framed photo preview"></canvas>
+      <label class="dropzone" id="dropzone" for="fileInput">
+        <span class="dropzone-icon" aria-hidden="true">+</span>
+        <span>Tap to choose a photo<br><small>or drag &amp; drop it here</small></span>
+      </label>
+    </div>
+
+    <input type="file" id="fileInput" accept="image/*" hidden>
+
+    <div class="controls" id="controls" hidden>
+      <label class="zoom">
+        <span>Zoom</span>
+        <input type="range" id="zoom" min="1" max="4" step="0.01" value="1">
+      </label>
+      <p class="hint">Drag the photo to reposition it.</p>
+      <div class="buttons">
+        <button type="button" class="secondary" id="changeBtn">Change photo</button>
+        <button type="button" id="downloadBtn">Download</button>
+      </div>
+    </div>
+
+    <p class="privacy">Your photo never leaves your device — all processing happens in your browser.</p>
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
