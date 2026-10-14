@@ -45,6 +45,7 @@ function clampPosition() {
 }
 
 function draw() {
+  if (typeof result !== "undefined") result.hidden = true; // image is now stale
   ctx.clearRect(0, 0, canvas.width, canvas.height);
   if (photo) {
     const s = coverScale() * view.zoom;
@@ -165,16 +166,46 @@ canvas.addEventListener("pointerup", endPointer);
 canvas.addEventListener("pointercancel", endPointer);
 
 // ---- Download ----------------------------------------------------------------
+const ua = navigator.userAgent;
+const isIOS =
+  /iPad|iPhone|iPod/.test(ua) ||
+  (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); // iPadOS
+// Facebook / Messenger / Instagram in-app browsers can't download files.
+const isInAppBrowser = /FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram/i.test(ua);
+
+const result = document.getElementById("result");
+const resultImg = document.getElementById("resultImg");
+
+function showForLongPress() {
+  resultImg.src = canvas.toDataURL("image/png");
+  result.hidden = false;
+  result.scrollIntoView({ behavior: "smooth", block: "start" });
+}
+
+function downloadBlob(blob) {
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = DOWNLOAD_NAME;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 10000);
+}
+
 downloadBtn.addEventListener("click", () => {
+  if (isInAppBrowser) return showForLongPress();
+
   downloadBtn.disabled = true;
   canvas.toBlob(async (blob) => {
     downloadBtn.disabled = false;
-    if (!blob) return alert("Sorry, the image couldn't be created.");
+    if (!blob) return showForLongPress();
 
+    // On iPhone/iPad the share sheet's "Save Image" is the only way to put
+    // the photo straight into Photos. Everywhere else (Android included),
+    // download the file directly.
     const file = new File([blob], DOWNLOAD_NAME, { type: "image/png" });
-    // On phones, the share sheet lets people "Save Image" straight to Photos.
-    const isTouch = matchMedia("(pointer: coarse)").matches;
-    if (isTouch && navigator.canShare?.({ files: [file] })) {
+    if (isIOS && navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file] });
         return;
@@ -182,15 +213,7 @@ downloadBtn.addEventListener("click", () => {
         if (err.name === "AbortError") return; // user closed the share sheet
       }
     }
-
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = DOWNLOAD_NAME;
-    document.body.appendChild(a);
-    a.click();
-    a.remove();
-    setTimeout(() => URL.revokeObjectURL(url), 1000);
+    downloadBlob(blob);
   }, "image/png");
 });
 
