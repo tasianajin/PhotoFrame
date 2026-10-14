@@ -35,10 +35,15 @@ The repo includes `wrangler.jsonc`, which serves the `public/` folder.
 Or deploy from your own computer: `npx wrangler login`, then
 `npx wrangler deploy`.
 
-## Other hosts
+## Host it on GitHub Pages
 
-GitHub Pages, Netlify, or Vercel also work: publish the `public/` folder.
-No build step needed.
+Some mobile networks block `*.workers.dev`, so the repo also deploys to
+GitHub Pages on every push to `main` (`.github/workflows/pages.yml`).
+
+One-time setup: in the repo's **Settings → Pages**, set **Source** to
+**GitHub Actions**. Then re-run the "Deploy to GitHub Pages" workflow from
+the **Actions** tab (or push any change). The link is
+`https://<your-username>.github.io/<repo-name>/`.
 
 ## Run locally
 
