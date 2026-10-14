@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Photo Frame</title>
   <meta name="description" content="Add our frame to your photo and download it.">
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css?v=4">
 </head>
 <body>
   <main class="app">
@@ -39,13 +39,12 @@
     <div class="result" id="result" hidden>
       <p class="result-title">Your framed photo is ready</p>
       <img id="resultImg" alt="Your framed photo">
-      <p class="hint">Press and hold the photo, then choose <strong>Download image</strong> or <strong>Save image</strong>.
-        Or open this page in Chrome or Safari to download it directly.</p>
+      <p class="hint" id="resultHint"></p>
     </div>
 
     <p class="privacy">Your photo never leaves your device — all processing happens in your browser.</p>
   </main>
 
-  <script src="app.js"></script>
+  <script src="app.js?v=4"></script>
 </body>
 </html>

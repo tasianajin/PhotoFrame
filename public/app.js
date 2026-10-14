@@ -2,7 +2,7 @@
 // Replace assets/frame.png with your own PNG (transparent where the photo
 // should show through). The output image has the same size as the frame.
 const FRAME_SRC = "assets/frame.png";
-const DOWNLOAD_NAME = "framed-photo.png";
+const DOWNLOAD_NAME = "framed-photo.jpg";
 // --------------------------------------------------------------------------
 
 const canvas = document.getElementById("canvas");
@@ -175,37 +175,48 @@ const isInAppBrowser = /FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram/i.test(ua);
 
 const result = document.getElementById("result");
 const resultImg = document.getElementById("resultImg");
+const resultHint = document.getElementById("resultHint");
 
-function showForLongPress() {
-  resultImg.src = canvas.toDataURL("image/png");
+// JPEG keeps the file small (the frame has no transparent edges).
+function renderJpeg() {
+  return canvas.toDataURL("image/jpeg", 0.92);
+}
+
+function dataUrlToBlob(dataUrl) {
+  const [head, body] = dataUrl.split(",");
+  const bytes = atob(body);
+  const arr = new Uint8Array(bytes.length);
+  for (let i = 0; i < bytes.length; i++) arr[i] = bytes.charCodeAt(i);
+  return new Blob([arr], { type: head.slice(5, head.indexOf(";")) });
+}
+
+// Always show the finished photo too, so it can be saved by long-press if
+// the browser ignores the download.
+function showResult(dataUrl, hint) {
+  resultImg.src = dataUrl;
+  resultHint.innerHTML = hint;
   result.hidden = false;
   result.scrollIntoView({ behavior: "smooth", block: "start" });
 }
 
-function downloadBlob(blob) {
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = DOWNLOAD_NAME;
-  document.body.appendChild(a);
-  a.click();
-  a.remove();
-  setTimeout(() => URL.revokeObjectURL(url), 10000);
-}
+const LONG_PRESS_HINT =
+  "Press and hold the photo, then choose <strong>Download image</strong> or <strong>Save image</strong>.";
 
-downloadBtn.addEventListener("click", () => {
-  if (isInAppBrowser) return showForLongPress();
+downloadBtn.addEventListener("click", async () => {
+  const dataUrl = renderJpeg();
 
-  downloadBtn.disabled = true;
-  canvas.toBlob(async (blob) => {
-    downloadBtn.disabled = false;
-    if (!blob) return showForLongPress();
+  if (isInAppBrowser) {
+    showResult(dataUrl, LONG_PRESS_HINT +
+      " Or open this page in Chrome or Safari (tap ⋮ → Open in browser) to download it directly.");
+    return;
+  }
 
-    // On iPhone/iPad the share sheet's "Save Image" is the only way to put
-    // the photo straight into Photos. Everywhere else (Android included),
-    // download the file directly.
-    const file = new File([blob], DOWNLOAD_NAME, { type: "image/png" });
-    if (isIOS && navigator.canShare?.({ files: [file] })) {
+  const blob = dataUrlToBlob(dataUrl);
+
+  // On iPhone/iPad the share sheet's "Save Image" puts the photo in Photos.
+  if (isIOS) {
+    const file = new File([blob], DOWNLOAD_NAME, { type: blob.type });
+    if (navigator.canShare?.({ files: [file] })) {
       try {
         await navigator.share({ files: [file] });
         return;
@@ -213,8 +224,22 @@ downloadBtn.addEventListener("click", () => {
         if (err.name === "AbortError") return; // user closed the share sheet
       }
     }
-    downloadBlob(blob);
-  }, "image/png");
+  }
+
+  // Everywhere else: start the download right away, inside the tap.
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = DOWNLOAD_NAME;
+  a.rel = "noopener";
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+  showResult(dataUrl,
+    "Download started — check your <strong>Downloads</strong> or <strong>Gallery</strong>. " +
+    "If nothing downloaded: " + LONG_PRESS_HINT);
 });
 
 // ---- Init ------------------------------------------------------------------
