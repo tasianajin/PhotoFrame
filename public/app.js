@@ -172,6 +172,17 @@ const isIOS =
   (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1); // iPadOS
 // Facebook / Messenger / Instagram in-app browsers can't download files.
 const isInAppBrowser = /FBAN|FBAV|FB_IAB|FBIOS|Messenger|Instagram/i.test(ua);
+const isAndroid = /Android/i.test(ua);
+
+// On Android, an intent:// link hands this page to Chrome, where downloads
+// work. Shown up front so people switch before editing their photo.
+const inappBanner = document.getElementById("inapp");
+if (isInAppBrowser && isAndroid) {
+  const here = location.href.replace(/^https?:\/\//, "");
+  document.getElementById("openChrome").href =
+    `intent://${here}#Intent;scheme=https;package=com.android.chrome;end`;
+  inappBanner.hidden = false;
+}
 
 const result = document.getElementById("result");
 const resultImg = document.getElementById("resultImg");
@@ -206,8 +217,13 @@ downloadBtn.addEventListener("click", async () => {
   const dataUrl = renderJpeg();
 
   if (isInAppBrowser) {
+    if (isAndroid) {
+      // Android in-app browsers can't save images at all; send them to Chrome.
+      inappBanner.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
     showResult(dataUrl, LONG_PRESS_HINT +
-      " Or open this page in Chrome or Safari (tap ⋮ → Open in browser) to download it directly.");
+      " Or open this page in Safari (tap ⋯ → Open in browser) to download it directly.");
     return;
   }
 

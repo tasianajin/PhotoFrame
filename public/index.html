@@ -5,10 +5,16 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Photo Frame</title>
   <meta name="description" content="Add our frame to your photo and download it.">
-  <link rel="stylesheet" href="style.css?v=4">
+  <link rel="stylesheet" href="style.css?v=5">
 </head>
 <body>
   <main class="app">
+    <div class="inapp" id="inapp" hidden>
+      <p><strong>Open in Chrome to download your photo.</strong><br>
+        Messenger and Facebook's built-in browser can't save photos.</p>
+      <a class="button" id="openChrome" href="#">Open in Chrome</a>
+    </div>
+
     <header>
       <h1>Photo Frame</h1>
       <p class="subtitle">Upload a photo, adjust it, and download it with the frame.</p>
@@ -45,6 +51,6 @@
     <p class="privacy">Your photo never leaves your device — all processing happens in your browser.</p>
   </main>
 
-  <script src="app.js?v=4"></script>
+  <script src="app.js?v=5"></script>
 </body>
 </html>

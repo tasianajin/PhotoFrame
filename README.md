@@ -6,7 +6,8 @@ overlaid on it, adjust the position and zoom, and download the framed photo.
 - Works on phones and desktops (drag to move, pinch / scroll / slider to zoom)
 - "Download" saves a JPEG directly (Android and desktop) and also shows it on the page for long-press saving; on iPhone it opens the
   share sheet so people can "Save Image" to Photos; in Messenger/Facebook/Instagram
-  in-app browsers it shows the photo to long-press and save
+  in-app browsers on Android (which can't save images) it shows an "Open in
+  Chrome" button; on iPhone in-app browsers it shows the photo to long-press
 - **Photos never leave the visitor's device.** All processing happens in the
   browser, so there's no server, no storage, and no hosting cost.
 

@@ -96,7 +96,21 @@ canvas.dragging { cursor: grabbing; }
 
 .buttons { display: flex; gap: 12px; }
 
-button {
+.inapp {
+  margin-bottom: 20px;
+  padding: 14px 16px;
+  border: 2px solid var(--accent);
+  border-radius: 12px;
+  background: var(--surface);
+  text-align: center;
+}
+.inapp p { margin: 0 0 12px; }
+.inapp[hidden] { display: none; }
+
+button, .button {
+  display: block;
+  text-align: center;
+  text-decoration: none;
   flex: 1;
   padding: 14px 16px;
   font: inherit;
